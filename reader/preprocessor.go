@@ -8,8 +8,7 @@ import (
 func ReplaceEnvVars(raw []byte) ([]byte, error) {
 	re := regexp.MustCompile(`\$\{([A-Za-z0-9_]+)\}`)
 	if re.Match(raw) {
-		dataS := string(raw)
-		res := re.ReplaceAllStringFunc(dataS, replaceEnvVars)
+		res := re.ReplaceAllStringFunc(string(raw), replaceEnvVars)
 		return []byte(res), nil
 	} else {
 		return raw, nil

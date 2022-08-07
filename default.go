@@ -1,4 +1,4 @@
-package config
+package retune
 
 import (
 	"bytes"
@@ -37,6 +37,7 @@ func newConfig(opts ...Option) (Config, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	if !c.opts.WithWatcherDisabled {
 		go c.run()
 	}
@@ -45,15 +46,16 @@ func newConfig(opts ...Option) (Config, error) {
 }
 
 func (c *config) Init(opts ...Option) error {
+	c.exit = make(chan bool)
+
 	c.opts = Options{
 		Reader: json.NewReader(),
 	}
-	c.exit = make(chan bool)
+
 	for _, o := range opts {
 		o(&c.opts)
 	}
 
-	// default loader uses the configured reader
 	if c.opts.Loader == nil {
 		loaderOpts := []loader.Option{memory.WithReader(c.opts.Reader)}
 		if c.opts.WithWatcherDisabled {
@@ -88,7 +90,6 @@ func (c *config) Options() Options {
 func (c *config) run() {
 	watch := func(w loader.Watcher) error {
 		for {
-			// get changeset
 			snap, err := w.Next()
 			if err != nil {
 				return err
@@ -101,7 +102,6 @@ func (c *config) run() {
 				continue
 			}
 
-			// save
 			c.snap = snap
 
 			// set values
@@ -159,7 +159,7 @@ func (c *config) Scan(v interface{}) error {
 	return c.vals.Scan(v)
 }
 
-// sync loads all the sources, calls the parser and updates the config
+// Sync loads all the sources, calls the parser and updates the config
 func (c *config) Sync() error {
 	if err := c.opts.Loader.Sync(); err != nil {
 		return err
@@ -197,12 +197,10 @@ func (c *config) Get(path ...string) reader.Value {
 	c.RLock()
 	defer c.RUnlock()
 
-	// did sync actually work?
 	if c.vals != nil {
 		return c.vals.Get(path...)
 	}
 
-	// no value
 	return newValue()
 }
 
@@ -289,7 +287,6 @@ func (w *watcher) Next() (reader.Value, error) {
 			return nil, err
 		}
 
-		// only process changes
 		if bytes.Equal(w.value.Bytes(), s.ChangeSet.Data) {
 			continue
 		}

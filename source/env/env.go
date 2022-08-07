@@ -102,7 +102,7 @@ func reverse(ss []string) {
 }
 
 func (e *env) Watch() (source.Watcher, error) {
-	return newWatcher()
+	return source.NewNoopWatcher()
 }
 
 func (e *env) Write(cs *source.ChangeSet) error {

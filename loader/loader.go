@@ -13,13 +13,13 @@ type Loader interface {
 	// Stop the loader
 	Close() error
 	// Load the sources
-	Load(...source.Source) error
+	Load(sources ...source.Source) error
 	// A Snapshot of loaded config
 	Snapshot() (*Snapshot, error)
 	// Force sync of sources
 	Sync() error
 	// Watch for changes
-	Watch(...string) (Watcher, error)
+	Watch(path ...string) (Watcher, error)
 	// Name of loader
 	String() string
 }

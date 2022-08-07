@@ -1,4 +1,4 @@
-package config
+package retune
 
 import (
 	"github.com/jace-ys/retune/loader"
