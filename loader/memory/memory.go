@@ -400,7 +400,7 @@ func (w *watcher) Next() (*loader.Snapshot, error) {
 	for {
 		select {
 		case <-w.exit:
-			return nil, errors.New("watcher stopped")
+			return nil, loader.ErrWatcherStopped
 
 		case uv := <-w.updates:
 			if uv.version <= w.version {

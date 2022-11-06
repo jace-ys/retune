@@ -3,9 +3,15 @@ package loader
 
 import (
 	"context"
+	"errors"
 
 	"github.com/jace-ys/retune/reader"
 	"github.com/jace-ys/retune/source"
+)
+
+var (
+	// ErrWatcherStopped is returned when loader watcher has been stopped
+	ErrWatcherStopped = errors.New("watcher stopped")
 )
 
 // Loader manages loading sources
